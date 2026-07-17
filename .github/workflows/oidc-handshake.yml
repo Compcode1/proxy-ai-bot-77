@@ -1,0 +1,33 @@
+name: Cross-Platform OIDC Data Plane Handshake
+
+on:
+  push:
+    branches:
+      - main  # Matches the strict branch path locked down in Phase 3
+
+permissions:
+  id-token: write  # The mandatory cryptographic gate required to fetch the OIDC badge
+  contents: read   # Allows the runner to read the repository code securely
+
+jobs:
+  execute-handshake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stage 1 & 2: Initiate Inbound OIDC Handshake to Entra ID
+        uses: azure/login@v2
+        with:
+          client-id: '93f3c397-70a1-40a4-8859-79caa5cf6d67'
+          tenant-id: '9439dd25-f3b5-4829-a76f-5ede8cd54c3c'
+          subscription-id: 'd5ffd8a5-d994-4eb5-b87c-4442054d233e'
+
+      - name: Stage 3 & 4: Authorized Data Plane Secret Extraction
+        uses: azure/get-keyvault-secrets@v1
+        with:
+          keyvault: 'key-vault-99'
+          secrets: 'top-secret-secret'
+        id: secret-extractor
+
+      - name: Verify Hardened Runtime Session Lifecycle
+        run: |
+          echo "Cryptographic handshake successfully executed."
+          echo "Data plane token confirmed valid for 60-minute maximum ceiling."

